@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <iterator>
+#include <algorithm>
 
 SAW::SAW(float x, float y, int lattice_size) {
   if( x == y ) {
@@ -67,59 +69,57 @@ void SAW::GenerateSAW(sf::Color col) {
 
   sf::Vector2f start = latticeMap[0].getPosition();
   erased.insert( 0 );
-  //latticeMap.erase( 0 );
-
+  latticeMap.erase( 0 );
+  sf::CircleShape temp(5);
   std::map<int,sf::CircleShape> neighbors;
-  std::map<int,int> neighbor_lattice_map;
+  neighbors[1] = temp;
   int count_neighbors=-1;
  
-  while( erased.size()<15 ) {
+  while( !neighbors.empty() ) {
 
     neighbors.clear();
-    neighbor_lattice_map.clear();
     count_neighbors = 0; 
 
     line[0].position = start;
     line[0].color = col;
 
     // Search for nearest neighbors. Add to a container to be analyzed.
-    for( latit=latticeMap.begin(); latit!=latticeMap.end(); latit++ ) {
+    for( latit = latticeMap.begin(); latit != latticeMap.end(); latit++ ) {
       // Ignore erased points
       bool found = false;
 
       found = erased.find( latit->first ) != erased.end();
-      
+
       if( !found ) {
 	sf::Vector2f lPos = latit->second.getPosition();
 	sf::Vector2f d = lPos - start;
 	double d_mag = sqrt( pow(d.x,2) + pow(d.y,2) );
 	
 	if( d_mag <= a ) {
-	  neighbors[count_neighbors++] = latit->second;
-	  neighbor_lattice_map[count_neighbors] = latit->first; 
-	  std::cout << "SITE " << latit->first << std::endl;
-	  std::cout << "neighbors = " << count_neighbors << " " << latit->first << " " << erased.size() << std::endl;
+	  neighbors[latit->first] = latit->second; 
 	}	
       }
     }
     if( neighbors.size() > 0 ) {
       // randomly choose a neighbor
       int nextPosition = rand() % neighbors.size();
-      line[1].position = neighbors[nextPosition].getPosition();
+      std::map<int,sf::CircleShape>::iterator item = neighbors.begin();
+      std::advance(item, nextPosition );
+      line[1].position = item->second.getPosition();
       line[1].color = col;
       saw.push_back( line );
 
-      erased.insert( neighbor_lattice_map[nextPosition] );
-      //latticeMap.erase( neighbor_lattice_map[nextPosition] );
+      erased.insert( item->first );
+      latticeMap.erase( item->first );
 
-      std::cout <<  "neighbor_lattice = " << neighbor_lattice_map[nextPosition] << std::endl;
-   
-      start = neighbors[nextPosition].getPosition();
-      std::cout << "erased.size  neighsize " << erased.size() << " " << neighbors.size() << std::endl;
+      start = item->second.getPosition();
     }
   }
-  std::set<int>::iterator sit;
-  for(sit=erased.begin(); sit!=erased.end(); sit++) std::cout << *sit << std::endl;
+  double ratio_of_nodes_hit = (erased.size()-1) / pow(latticeN+1,2) ;
+  std::cout << "Length of SAW = " << (erased.size() - 1) <<"*a units = " << (erased.size() - 1)*a << "." << std::endl;
+  std::cout << "Therefore, the program hit " << erased.size() - 1 << " out of " 
+	    << (latticeN+1)*(latticeN+1) << " possible nodes, resulting in a ratio of "
+	    << ratio_of_nodes_hit << std::endl;
 }
 
 void SAW::draw( sf::RenderTarget& target, sf::RenderStates) const {
