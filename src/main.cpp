@@ -22,7 +22,8 @@ int main() {
   //////////////////////////////////////////////////////
   //                   Initialize                     //
   //////////////////////////////////////////////////////
-  SAW saw(gDisplayx,gDisplayy,10);
+  // Max Lattice Size is 50x50, 
+  SAW saw(gDisplayx,gDisplayy,9);
   
   while( window.isOpen() ) {
 
@@ -32,7 +33,7 @@ int main() {
 	window.close();
       }
     }
-    window.clear(sf::Color::White);
+    window.clear(sf::Color::Black);
     window.draw(saw); 
     window.display();      
   }
