@@ -64,62 +64,74 @@ void SAW::GenerateLattice(){
 }
 
 void SAW::GenerateSAW(sf::Color col) {
-  // Find the starting position (top left)
+  // Starting Position is Top Left Node
+  // This algorithm searches for a perfect solution, or where
+  // the random walker touches all nodes without crossing over itself.
   srand (time(NULL));
 
-  sf::Vector2f start = latticeMap[0].getPosition();
-  erased.insert( 0 );
-  latticeMap.erase( 0 );
-  sf::CircleShape temp(5);
-  std::map<int,sf::CircleShape> neighbors;
-  neighbors[1] = temp;
-  int count_neighbors=-1;
- 
-  while( !neighbors.empty() ) {
+  unsigned long int numberoftries = 0;
+  unsigned long int failedtries = 0;
+  erased.insert(0);
 
-    neighbors.clear();
-    count_neighbors = 0; 
+  while( erased.size() <= 100 ) { 
+    erased.clear();
+    saw.clear();
+    sf::Vector2f start = latticeMap[0].getPosition();
+    erased.insert( 0 );
 
-    line[0].position = start;
-    line[0].color = col;
+    sf::CircleShape temp(5);
+    std::map<int,sf::CircleShape> neighbors;
+    neighbors[1] = temp;
+    numberoftries++;
 
-    // Search for nearest neighbors. Add to a container to be analyzed.
-    for( latit = latticeMap.begin(); latit != latticeMap.end(); latit++ ) {
-      // Ignore erased points
-      bool found = false;
+    //std::cout << numberoftries << std::endl;
+    while( !neighbors.empty() ) {
 
-      found = erased.find( latit->first ) != erased.end();
+      neighbors.clear();
+      line[0].position = start;
+      line[0].color = col;
 
-      if( !found ) {
-	sf::Vector2f lPos = latit->second.getPosition();
-	sf::Vector2f d = lPos - start;
-	double d_mag = sqrt( pow(d.x,2) + pow(d.y,2) );
+      // Search for nearest neighbors. Add to a container to be analyzed.
+      for( latit = latticeMap.begin(); latit != latticeMap.end(); latit++ ) {
+	// Ignore erased points
+	bool found = false;
+	found = erased.find( latit->first ) != erased.end();
+
+	if( !found ) {
+	  sf::Vector2f lPos = latit->second.getPosition();
+	  sf::Vector2f d = lPos - start;
+	  double d_mag = sqrt( pow(d.x,2) + pow(d.y,2) );
 	
-	if( d_mag <= a ) {
-	  neighbors[latit->first] = latit->second; 
-	}	
+	  if( d_mag <= a ) {
+	    neighbors[latit->first] = latit->second; 
+	  }	
+	}
+      }
+      if( neighbors.size() > 0 ) {
+	// Randomly choose a neighbor
+	int nextPosition = rand() % neighbors.size();
+	std::map<int,sf::CircleShape>::iterator item = neighbors.begin();
+	std::advance(item, nextPosition );
+	line[1].position = item->second.getPosition();
+	line[1].color = col;
+	saw.push_back( line );
+
+	erased.insert( item->first );
+
+	start = item->second.getPosition();
       }
     }
-    if( neighbors.size() > 0 ) {
-      // randomly choose a neighbor
-      int nextPosition = rand() % neighbors.size();
-      std::map<int,sf::CircleShape>::iterator item = neighbors.begin();
-      std::advance(item, nextPosition );
-      line[1].position = item->second.getPosition();
-      line[1].color = col;
-      saw.push_back( line );
-
-      erased.insert( item->first );
-      latticeMap.erase( item->first );
-
-      start = item->second.getPosition();
-    }
+    std::cout << erased.size() << std::endl;
+    double ratio_of_nodes_hit = erased.size() / pow(latticeN+1,2) ;
+    std::cout << ratio_of_nodes_hit << std::endl;
+    // std::cout << "Length of SAW = " << (erased.size() - 1) <<"*a units = " << (erased.size() - 1)*a << "." << std::endl;
+    // std::cout << "Therefore, the program hit " << erased.size() - 1 << " out of " 
+    // 	      << (latticeN+1)*(latticeN+1) << " possible nodes, resulting in a ratio of "
+    // 	      << ratio_of_nodes_hit << std::endl;
+    
+    if( ratio_of_nodes_hit <= 1 ) failedtries++;
   }
-  double ratio_of_nodes_hit = (erased.size()-1) / pow(latticeN+1,2) ;
-  std::cout << "Length of SAW = " << (erased.size() - 1) <<"*a units = " << (erased.size() - 1)*a << "." << std::endl;
-  std::cout << "Therefore, the program hit " << erased.size() - 1 << " out of " 
-	    << (latticeN+1)*(latticeN+1) << " possible nodes, resulting in a ratio of "
-	    << ratio_of_nodes_hit << std::endl;
+  std::cout << numberoftries << std::endl;
 }
 
 void SAW::draw( sf::RenderTarget& target, sf::RenderStates) const {
