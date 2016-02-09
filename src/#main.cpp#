@@ -4,6 +4,9 @@
 //    ************************************************************
 //      Self-Avoiding random Walk in two dimensions, written by 
 //      Freddy Obrecht during the first week of February of 2016.
+//      The walker starts in the top left corner and moves randomly
+//      with only one caveat - it cannot go back or cross over the
+//      path, hence the name self-avoiding walker.
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
@@ -25,7 +28,7 @@ int main() {
   //                   Initialize                     //
   //////////////////////////////////////////////////////
   // Max Lattice Size is 50x50. 
-  SAW saw(gDisplayx,gDisplayy,7);
+  SAW saw(gDisplayx,gDisplayy,9);
   
   while( window.isOpen() ) {
 

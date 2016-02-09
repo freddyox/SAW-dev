@@ -13,6 +13,7 @@ private:
 
   // Lattice Attributes
   int latticeN;
+  int totalN;
   float a; // lattice dimensions
   std::vector<sf::CircleShape> lattice;
   std::map<int,sf::CircleShape> latticeMap;

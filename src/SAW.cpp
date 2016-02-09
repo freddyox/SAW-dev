@@ -19,6 +19,8 @@ SAW::SAW(float x, float y, int lattice_size) {
   if( lattice_size <= 50 ){latticeN = lattice_size;}
   else latticeN = 9;
 
+  totalN = (latticeN+1)*(latticeN+1); 
+
   GenerateLattice();
 
   line = sf::VertexArray(sf::LinesStrip,2);
@@ -72,8 +74,8 @@ void SAW::GenerateSAW(sf::Color col) {
   unsigned long int numberoftries = 0;
   unsigned long int failedtries = 0;
   erased.insert(0);
-
-  while( erased.size() <= 100 ) { 
+  
+  while( erased.size() <= totalN-1 ) { 
     erased.clear();
     saw.clear();
     sf::Vector2f start = latticeMap[0].getPosition();
@@ -121,17 +123,24 @@ void SAW::GenerateSAW(sf::Color col) {
 	start = item->second.getPosition();
       }
     }
-    std::cout << erased.size() << std::endl;
+    // *******************************************************************************
+    // **                                  SPECS                                    **
+    // *******************************************************************************
+    // The size of container erased = total number of nodes touched by a SAW
+    // erased.size()-1 corresponds to the number of lines needed for a given walk
+    // "a" is the lattice spacing
+    
+    //std::cout << erased.size() << std::endl;
+    //std::cout << totalN << std::endl;
     double ratio_of_nodes_hit = erased.size() / pow(latticeN+1,2) ;
     std::cout << ratio_of_nodes_hit << std::endl;
     // std::cout << "Length of SAW = " << (erased.size() - 1) <<"*a units = " << (erased.size() - 1)*a << "." << std::endl;
     // std::cout << "Therefore, the program hit " << erased.size() - 1 << " out of " 
-    // 	      << (latticeN+1)*(latticeN+1) << " possible nodes, resulting in a ratio of "
+    // 	      << totalN << " possible nodes, resulting in a ratio of "
     // 	      << ratio_of_nodes_hit << std::endl;
     
-    if( ratio_of_nodes_hit <= 1 ) failedtries++;
   }
-  std::cout << numberoftries << std::endl;
+  std::cout << "TOTAL #: " <<  numberoftries << std::endl;
 }
 
 void SAW::draw( sf::RenderTarget& target, sf::RenderStates) const {
@@ -139,7 +148,7 @@ void SAW::draw( sf::RenderTarget& target, sf::RenderStates) const {
   for( cit1=saw.begin(); cit1!=saw.end(); cit1++ ){
     target.draw(*cit1);
   }
- std::vector<sf::CircleShape>::const_iterator cit;
+  std::vector<sf::CircleShape>::const_iterator cit;
   for( cit=lattice.begin(); cit!=lattice.end(); cit++ ){
     target.draw(*cit);
   }
