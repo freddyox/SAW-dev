@@ -4,7 +4,7 @@ echo "Compiling..."
 echo " "
 cd src/
 
-g++ -c main.cpp SAW.cpp -I/Documents/SFML/SFML_SRC/include 
+g++ -c main.cpp SAW.cpp Screenshot.cpp -I/Documents/SFML/SFML_SRC/include 
 
 
 echo "Linking..."
@@ -18,7 +18,7 @@ fi
 mv *.o ../linkers
 cd ../linkers
 
-g++ main.o SAW.o -o saw -L/Documents/SFML/SFML_SRC/lib -lsfml-graphics -lsfml-window -lsfml-system
+g++ main.o SAW.o Screenshot.o -o saw -L/Documents/SFML/SFML_SRC/lib -lsfml-graphics -lsfml-window -lsfml-system
 
 mv saw ../
 cd ../

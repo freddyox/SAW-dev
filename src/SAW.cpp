@@ -25,6 +25,7 @@ SAW::SAW(float x, float y, int lattice_size) {
 
   line = sf::VertexArray(sf::LinesStrip,2);
   sf::Color purple = sf::Color(127,35,219);
+  numberoftries = 0;
   GenerateSAW(purple);
 }
 
@@ -70,9 +71,7 @@ void SAW::GenerateSAW(sf::Color col) {
   // This algorithm searches for a perfect solution, or where
   // the random walker touches all nodes without crossing over itself.
   srand (time(NULL));
-
-  unsigned long int numberoftries = 0;
-  unsigned long int failedtries = 0;
+ 
   erased.insert(0);
   
   while( erased.size() <= totalN-1 ) { 
@@ -132,8 +131,8 @@ void SAW::GenerateSAW(sf::Color col) {
     
     //std::cout << erased.size() << std::endl;
     //std::cout << totalN << std::endl;
-    double ratio_of_nodes_hit = erased.size() / pow(latticeN+1,2) ;
-    std::cout << ratio_of_nodes_hit << std::endl;
+    //double ratio_of_nodes_hit = erased.size() / pow(latticeN+1,2) ;
+    //std::cout << ratio_of_nodes_hit << std::endl;
     // std::cout << "Length of SAW = " << (erased.size() - 1) <<"*a units = " << (erased.size() - 1)*a << "." << std::endl;
     // std::cout << "Therefore, the program hit " << erased.size() - 1 << " out of " 
     // 	      << totalN << " possible nodes, resulting in a ratio of "

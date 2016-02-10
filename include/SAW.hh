@@ -24,6 +24,7 @@ private:
   std::vector<sf::VertexArray> saw;
   std::set<int> erased;
   std::set<int>::iterator erasedit;
+  unsigned long int numberoftries;
 
 public:
   SAW(float,float,int);
@@ -32,5 +33,8 @@ public:
   void GenerateSAW(sf::Color);
 
   void draw(sf::RenderTarget&, sf::RenderStates) const;
+
+  int GetNTries() { return numberoftries; }
+  int GetLatticeSize() { return latticeN+1; }
 };
 #endif

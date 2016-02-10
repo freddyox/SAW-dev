@@ -12,6 +12,7 @@
 #include <sstream>
 
 #include "../include/SAW.hh"
+#include "../include/Screenshot.hh"
 
 const float gDisplayx = 1000;
 const float gDisplayy = 1000;
@@ -25,8 +26,11 @@ int main() {
   //                   Initialize                     //
   //////////////////////////////////////////////////////
   // Max Lattice Size is 50x50. 
-  SAW saw(gDisplayx,gDisplayy,7);
-  
+  SAW saw(gDisplayx,gDisplayy,4);
+  Screenshot screenshot_gui(gDisplayx,gDisplayy);
+  screenshot_gui.SetTotal( saw.GetNTries() );
+  screenshot_gui.SetLatticeSize( saw.GetLatticeSize() );
+
   while( window.isOpen() ) {
 
     sf::Event event;
@@ -36,7 +40,12 @@ int main() {
       }
     }
     window.clear(sf::Color::Black);
-    window.draw(saw); 
+    window.draw(saw);
+    window.draw(screenshot_gui);
+    sf::Vector2i mouse = sf::Mouse::getPosition(window);
+    screenshot_gui.ButtonGUI( window.mapPixelToCoords(mouse) );
+    screenshot_gui.ClickButton( window.mapPixelToCoords(mouse), window.capture());
+
     window.display();      
   }
   return 0;
